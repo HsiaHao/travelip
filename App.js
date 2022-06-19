@@ -3,6 +3,7 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import Home from './Screen/Home';
 import Map from './Screen/Map';
+import KeyboardAvoidingView from './Screen/KeyboardAvoidingView'
 import Mountain_list from './Screen/Mountain_list';
 import Map_FindMountain from './Screen/Map_FindMountain';
 import { Provider } from 'react-redux';
@@ -28,7 +29,7 @@ function App() {
   return (
      <Provider store={Store}>
       <NavigationContainer>
-        <Stack.Navigator>
+        <Stack.Navigator> 
           <Stack.Screen
             name="Home"
             component={Home}
@@ -45,6 +46,7 @@ function App() {
             name="Map_FindMountain"
             component={Map_FindMountain}
           />
+
         </Stack.Navigator>
       </NavigationContainer>
     </Provider>
