@@ -3,6 +3,7 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import Home from './Screen/Home';
 import Map from './Screen/Map';
+import KeyboardAvoidingView from './Screen/KeyboardAvoidingView'
 import Mountain_list from './Screen/Mountain_list';
 import { Provider } from 'react-redux';
 import { Store } from './Redux/store';
@@ -22,6 +23,10 @@ function App() {
      <Provider store={Store}>
       <NavigationContainer>
         <Stack.Navigator>
+          <Stack.Screen
+            name="KeyboardAvoidingView"
+            component={KeyboardAvoidingView}
+          />
           <Stack.Screen
             name="Home"
             component={Home}
