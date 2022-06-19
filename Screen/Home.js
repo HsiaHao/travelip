@@ -1,5 +1,4 @@
 import { StatusBar } from 'expo-status-bar'
-import MapView from 'react-native-maps';
 import React, { useState } from 'react';
 import GlobalStyle from '../utils/GlobalStyle';
 
@@ -44,8 +43,19 @@ const Travelip = ({navigation}) => {
       <Button
         title='visit mountain list'
         onPress={() => navigation.navigate('Mountain_list') }
+      
         
       />
+      :
+      null
+      }
+
+    {submitted ?
+      <Button
+      title='Find your mountain'
+      onPress={() => navigation.navigate('Map_FindMountain') }
+      
+    />
       :
       null
       }
@@ -60,7 +70,7 @@ const Test = (props) => {
       <Text style={[GlobalStyle.CustomFont]} > Welcome to Travelip. You are reistered as {props.name}! </Text>
     </View>
   );
-}
+} 
 
 const styles = StyleSheet.create({
   container: {

@@ -5,19 +5,26 @@ import Home from './Screen/Home';
 import Map from './Screen/Map';
 import KeyboardAvoidingView from './Screen/KeyboardAvoidingView'
 import Mountain_list from './Screen/Mountain_list';
+import Map_FindMountain from './Screen/Map_FindMountain';
 import { Provider } from 'react-redux';
 import { Store } from './Redux/store';
 import { useFonts } from 'expo-font';
+import AppLoading from 'expo-app-loading';
 
-const Stack = createStackNavigator();
+const Stack = createStackNavigator(); 
 
 
 
 function App() {
-  const [loaded] = useFonts({
-    ImprimaRegular: require('./assets/fonts/Imprima-Regular.ttf'),
-    IMFellGreatPrimerItalic: require('./assets/fonts/IMFellGreatPrimer-Italic.ttf'),
+  
+  let [fontsLoaded] = useFonts({
+    'ImprimaRegular': require('./assets/fonts/Imprima-Regular.ttf'),
+    'IMFellGreatPrimerItalic': require('./assets/fonts/IMFellGreatPrimer-Italic.ttf'),
   });
+  if (!fontsLoaded) {
+    return <AppLoading />;
+  }
+  
 
   return (
      <Provider store={Store}>
@@ -38,6 +45,10 @@ function App() {
           <Stack.Screen
             name="Mountain_list"
             component={Mountain_list}
+          />
+          <Stack.Screen
+            name="Map_FindMountain"
+            component={Map_FindMountain}
           />
         </Stack.Navigator>
       </NavigationContainer>
