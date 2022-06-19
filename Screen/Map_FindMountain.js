@@ -4,7 +4,7 @@ import { StyleSheet,  View, Text, Dimensions, Animated, Callout, Image} from 're
 import { useSelector, useDispatch } from 'react-redux';
 import { getCities } from '../Redux/actions';
 import mapStyle from '../utils/MapStyle.json';
-import { Components } from 'expo';
+
 
 const { width, height } = Dimensions.get("window");
 const CARD_HEIGHT = height / 4;
@@ -24,35 +24,39 @@ export default function Map_FindMountain() {
   let mapIndex = 0;
   let MapAnimation = new Animated.Value(0);
   const _map = React.useRef(null);
+  const _scrollView = React.useRef(null);
 
-  // useEffect(() => {
-  //   MapAnimation.addListener(({ value }) => {
-  //     let index = Math.floor(value / CARD_WIDTH + 0.3); // animate 30% away from landing on the next item
-  //     if (index >= cities.length) {
-  //       index = cities.length - 1;
-  //     }
-  //     if (index <= 0) {
-  //       index = 0;
-  //     }
+  useEffect(() => {
+    MapAnimation.addListener(({ value }) => {
+      console.log("value", {value})
+      let index = Math.floor(value / CARD_WIDTH + 0.3); // animate 30% away from landing on the next item
+      if (index >= cities.length) {
+        index = cities.length - 1;
+      }
+      if (index <= 0) {
+        index = 0;
+      }
 
-  //     clearTimeout(regionTimeout);
+      clearTimeout(regionTimeout);
 
-  //     const regionTimeout = setTimeout(() => {
-  //       if( mapIndex !== index ) {
-  //         mapIndex = index;
-  //         const { coordinate } = cities[index];
-  //         _map.current.animateToRegion(
-  //           {
-  //             ...coordinate,
-  //             latitudeDelta: 0.04864195044303443,
-  //             longitudeDelta: 0.040142817690068,
-  //           },
-  //           350
-  //         );
-  //       }
-  //     }, 10);
-  //   });
-  // });
+      console.log("animated", {index})
+
+      const regionTimeout = setTimeout(() => {
+        if( mapIndex !== index ) {
+          mapIndex = index;
+          _map.current.animateToRegion(
+            {
+              latitude: cities[index].lat,
+              longitude: cities[index].lng,
+              latitudeDelta: 0.1,
+              longitudeDelta: 0.1,
+            },
+            350
+          );
+        }
+      }, 10);
+    });
+  });
 
   
  
@@ -67,12 +71,8 @@ export default function Map_FindMountain() {
       outputRange: [1, 2.5, 1],
       extrapolate: "clamp",
     });
-    const opacity = MapAnimation.interpolate({
-      inputRange,
-      outputRange: [0.35, 1, 0.35],
-      extrapolate: "clamp",
-    });
-    return { scale, opacity };
+
+    return { scale };
   });
 
 
@@ -106,26 +106,31 @@ export default function Map_FindMountain() {
               },
             ],
           };
-          const opacityStyle = {
-            opacity: interpolations[index].opacity,
-          };
+
+          const onMarkerPress = (mapEventData) => {
+            const markerID = mapEventData._targetInst.return.key;
+            console.log({markerID})
+        
+            let x = (markerID * CARD_WIDTH) + (markerID * 20); 
+            console.log({x})
+        
+            _scrollView.current.scrollTo({x: x, y: 0, animated: true});
+          }
+
           
           return (<MapView.Marker
              
               key={index}
               coordinate={{ latitude: parseFloat(item.lat), longitude: parseFloat(item.lng) }}
-              // onPress={(e)=>onMarkerPress(e)}
+              onPress={(e)=>onMarkerPress(e)}
               
               >
-            <Animated.View style={[styles.markerWrap, opacityStyle]}>
-              <Animated.View style={[styles.ring, scaleStyle]} />
-                  <View style={styles.marker} />
-                {/* <Animated.Image
-                  source={require('../assets/marker.png')}
-                  style={[styles.marker]}
+            <Animated.View style={[styles.markerWrap]}>
+                <Animated.Image 
+                  source={require('../assets/map_marker.png')}
+                  style={[styles.marker, scaleStyle]}
                   resizeMode="cover"
-                /> */}
-                
+                />
             </Animated.View>
             
             </MapView.Marker>
@@ -135,8 +140,8 @@ export default function Map_FindMountain() {
       </MapView>   
 
       <Animated.ScrollView
+          ref={_scrollView}
           horizontal
-          pagingEnabled
           scrollEventThrottle={1}
           showsHorizontalScrollIndicator={false}
           snapToInterval={CARD_WIDTH}
@@ -243,14 +248,15 @@ const styles = StyleSheet.create({
   markerWrap: {
     alignItems: "center",
     justifyContent: "center",
-    width:100,
-    height:100,
+    width:50,
+    height:50,
+ 
   },
   marker: {
-    width: 8,
-    height: 8,
-    borderRadius: 4,
-    backgroundColor: "rgba(130,4,150, 0.9)",
+    width: 16,
+    height: 16,
+    // borderRadius: 4,
+    // backgroundColor: "rgba(130,4,150, 0.9)",
   },
   ring: {
     width: 24,
