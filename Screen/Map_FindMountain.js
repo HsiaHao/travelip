@@ -1,14 +1,16 @@
 import React, { useEffect, useMemo, useState, Component } from 'react';
 import MapView, {Marker, PROVIDER_GOOGLE} from 'react-native-maps';
-import { StyleSheet,  View, Text, Dimensions, Animated, Callout, Image} from 'react-native';
+import Ionicons from 'react-native-vector-icons/Ionicons';
+import { StyleSheet,  View, Text, Dimensions, Animated, Image} from 'react-native';
 import { useSelector, useDispatch } from 'react-redux';
 import { getCities } from '../Redux/actions';
 import mapStyle from '../utils/MapStyle.json';
+import { TextInput } from 'react-native-gesture-handler';
 
 
 const { width, height } = Dimensions.get("window");
-const CARD_HEIGHT = height / 4;
-const CARD_WIDTH = CARD_HEIGHT - 50;
+const CARD_HEIGHT = height / 4; 
+const CARD_WIDTH = CARD_HEIGHT- 50 ; 
 
 
 
@@ -29,7 +31,7 @@ export default function Map_FindMountain() {
   useEffect(() => {
     MapAnimation.addListener(({ value }) => {
       console.log("value", {value})
-      let index = Math.floor(value / CARD_WIDTH + 0.3); // animate 30% away from landing on the next item
+      let index = Math.floor(value / CARD_WIDTH + 0.3);; // animate 30% away from landing on the next item
       if (index >= cities.length) {
         index = cities.length - 1;
       }
@@ -38,8 +40,6 @@ export default function Map_FindMountain() {
       }
 
       clearTimeout(regionTimeout);
-
-      console.log("animated", {index})
 
       const regionTimeout = setTimeout(() => {
         if( mapIndex !== index ) {
@@ -51,10 +51,10 @@ export default function Map_FindMountain() {
               latitudeDelta: 0.1,
               longitudeDelta: 0.1,
             },
-            350
+            600
           );
         }
-      }, 10);
+      }, 1);
     });
   });
 
@@ -79,11 +79,6 @@ export default function Map_FindMountain() {
 
   return (
     <View style={styles.container}>
-
-        {/* <FlatList
-        data={cities}
-        renderItem={({item}) => <Text>{item.Mountain}</Text>}
-        /> */}
   
       <MapView 
         ref={_map}
@@ -93,8 +88,8 @@ export default function Map_FindMountain() {
         initialRegion={{
         latitude: 22.9756,
         longitude: 120.9738,
-        latitudeDelta: 3.5,
-        longitudeDelta: 3.8,}}
+        latitudeDelta: 4.5,
+        longitudeDelta: 5,}}
             >
 
         {cities.map ((item,index) => {
@@ -111,7 +106,7 @@ export default function Map_FindMountain() {
             const markerID = mapEventData._targetInst.return.key;
             console.log({markerID})
         
-            let x = (markerID * CARD_WIDTH) + (markerID * 20); 
+            let x = (markerID * CARD_WIDTH) +  (markerID * 10); 
             console.log({x})
         
             _scrollView.current.scrollTo({x: x, y: 0, animated: true});
@@ -130,6 +125,7 @@ export default function Map_FindMountain() {
                   source={require('../assets/map_marker.png')}
                   style={[styles.marker, scaleStyle]}
                   resizeMode="cover"
+                  title = {item.Mountain}
                 />
             </Animated.View>
             
@@ -137,7 +133,18 @@ export default function Map_FindMountain() {
              );
         })}
               
-      </MapView>   
+      </MapView> 
+
+      <View style={styles.searchBox}>
+  
+        <TextInput
+        placeholder="Search here"
+        placeholderTextColor="#000"
+        autoCapitalize="none"
+        style={{flex:1, padding:0}}
+        />
+        <Ionicons name="ios-search" size={20} />
+      </View>
 
       <Animated.ScrollView
           ref={_scrollView}
@@ -189,9 +196,25 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
+  searchBox: {
+    position:'absolute',
+    top: 0,
+    marginTop: Platform.OS === 'ios' ? 10 : 3, 
+    flexDirection:"row",
+    backgroundColor: '#fff',
+    width: '90%',
+    alignSelf:'center',
+    borderRadius: 5,
+    padding: 10,
+    shadowColor: '#ccc',
+    shadowOffset: { width: 0, height: 3 },
+    shadowOpacity: 0.5,
+    shadowRadius: 5,
+    elevation: 10,
+  },
   scrollView: {
     position: "absolute",
-    bottom: 30,
+    bottom: 5,
     left: 0,
     right: 0,
     paddingVertical: 10,
