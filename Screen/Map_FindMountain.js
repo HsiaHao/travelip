@@ -1,7 +1,16 @@
 import React, { useEffect, useMemo, useState, Component } from 'react';
 import MapView, {Marker, PROVIDER_GOOGLE} from 'react-native-maps';
 import Ionicons from 'react-native-vector-icons/Ionicons';
-import { StyleSheet,  View, Text, Dimensions, Animated, Image} from 'react-native';
+import { 
+  Animated,
+  Dimensions,
+  Image,
+  Linking,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View
+} from 'react-native';
 import { useSelector, useDispatch } from 'react-redux';
 import { getCities } from '../Redux/actions';
 import mapStyle from '../utils/MapStyle.json';
@@ -11,7 +20,6 @@ import { TextInput } from 'react-native-gesture-handler';
 const { width, height } = Dimensions.get("window");
 const CARD_HEIGHT = height / 4; 
 const CARD_WIDTH = CARD_HEIGHT- 50 ; 
-
 
 
 export default function Map_FindMountain() {
@@ -58,8 +66,6 @@ export default function Map_FindMountain() {
     });
   });
 
-  
- 
   const interpolations = cities.map((item, index) => {
     const inputRange = [
       (index - 1) * CARD_WIDTH,
@@ -76,7 +82,6 @@ export default function Map_FindMountain() {
   });
 
 
-
   return (
     <View style={styles.container}>
   
@@ -90,7 +95,7 @@ export default function Map_FindMountain() {
         longitude: 120.9738,
         latitudeDelta: 4.5,
         longitudeDelta: 5,}}
-            >
+        >
 
         {cities.map ((item,index) => {
 
@@ -120,14 +125,15 @@ export default function Map_FindMountain() {
               onPress={(e)=>onMarkerPress(e)}
               
               >
-            <Animated.View style={[styles.markerWrap]}>
-                <Animated.Image 
-                  source={require('../assets/map_marker.png')}
-                  style={[styles.marker, scaleStyle]}
-                  resizeMode="cover"
-                  title = {item.Mountain}
-                />
-            </Animated.View>
+              <Animated.View style={[styles.markerWrap]}>
+                  <Animated.Image 
+                    source={require('../assets/map_marker.png')}
+                    style={[styles.marker, scaleStyle]}
+                    resizeMode="cover"
+                    title = {item.Mountain}
+                  /> 
+                
+              </Animated.View>
             
             </MapView.Marker>
              );
@@ -135,6 +141,7 @@ export default function Map_FindMountain() {
               
       </MapView> 
 
+      {/* create searchsbox for map */}
       <View style={styles.searchBox}>
   
         <TextInput
@@ -146,48 +153,73 @@ export default function Map_FindMountain() {
         <Ionicons name="ios-search" size={20} />
       </View>
 
+      
       <Animated.ScrollView
-          ref={_scrollView}
-          horizontal
-          scrollEventThrottle={1}
-          showsHorizontalScrollIndicator={false}
-          snapToInterval={CARD_WIDTH}
-          onScroll={Animated.event(
-            [
-              {
-                nativeEvent: {
-                  contentOffset: {
-                    x: MapAnimation,
-                  },
+        ref={_scrollView}
+        horizontal
+        scrollEventThrottle={1}
+        showsHorizontalScrollIndicator={false}
+        snapToInterval={CARD_WIDTH}
+        onScroll={Animated.event(
+          [
+            {
+              nativeEvent: {
+                contentOffset: {
+                  x: MapAnimation,
                 },
               },
-            ],
-            { useNativeDriver: false }
-          )}
-          style={styles.scrollView}
-          contentContainerStyle={styles.endPadding}
+            },
+          ],
+          { useNativeDriver: false }
+        )}
+        style={styles.scrollView}
+        contentContainerStyle={styles.endPadding}
         >
-          {cities.map((item, index) => (
-            <View style={styles.card} key={index}>
-              <Image
-                source={require('../assets/mountain.png')}
-                style={styles.cardImage}
-                resizeMode="cover"
-              />
-              <View style={styles.textContent}>
-                <Text numberOfLines={1} style={styles.cardtitle}>{item.Mountain}</Text>
-                <Text numberOfLines={1} style={styles.cardDescription}>
-                  {item.City}
-                </Text>
-              </View>
+        {cities.map((item, index) => (
+          <View style={styles.card} key={index}>
+            <Image
+              source={require('../assets/mountain.png')}
+              style={styles.cardImage}
+              resizeMode="cover"
+            />
+            <View style={styles.textContent}>
+              <Text numberOfLines={1} style={styles.cardtitle}>{item.Mountain}</Text>
+              <Text numberOfLines={1} style={styles.cardDescription}>{item.City}</Text>
+              <View style={styles.button}>
+                <TouchableOpacity
+                  onPress={() => {
+                    Linking.openURL(`https://www.google.com/maps/search/${item.lat},${item.lng}/`)
+                  }}
+                  style={[styles.signIn, {
+                    borderColor: '#000080',
+                    borderWidth: 1
+                  }]}
+                >
+                <Text style={[styles.textSign, {
+                  color: '#4169e1'
+                }]}>Visit Now</Text>
+              </TouchableOpacity>
             </View>
-          ))}
-        </Animated.ScrollView>
-
+            <View style={styles.button}>
+                <TouchableOpacity
+                  onPress={() => {}}
+                  style={[styles.signIn, {
+                    borderColor: '#000080',
+                    borderWidth: 1
+                  }]}
+                >
+                <Text style={[styles.textSign, {
+                  color: '#4169e1'
+                }]}>Read More</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+          </View>
+        ))}
+      </Animated.ScrollView>
     </View>
   );
 }
-
 
 const styles = StyleSheet.create({
   container: {
@@ -278,8 +310,7 @@ const styles = StyleSheet.create({
   marker: {
     width: 16,
     height: 16,
-    // borderRadius: 4,
-    // backgroundColor: "rgba(130,4,150, 0.9)",
+
   },
   ring: {
     width: 24,
@@ -294,4 +325,19 @@ const styles = StyleSheet.create({
     width: Dimensions.get('window').width,
     height: Dimensions.get('window').height,
   },
+  button: {
+    alignItems: 'center',
+    marginTop: 5
+  },
+  signIn: {
+    width: '100%',
+    padding:5,
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderRadius: 3
+  },
+  textSign: {
+    fontSize: 14,
+    fontWeight: 'bold'
+}
 });
