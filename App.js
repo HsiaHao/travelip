@@ -29,7 +29,7 @@ function App() {
   return (
      <Provider store={Store}>
       <NavigationContainer>
-        <Stack.Navigator>
+        <Stack.Navigator> 
           <Stack.Screen
             name="Home"
             component={Home}
@@ -46,6 +46,7 @@ function App() {
             name="Map_FindMountain"
             component={Map_FindMountain}
           />
+
         </Stack.Navigator>
       </NavigationContainer>
     </Provider>
