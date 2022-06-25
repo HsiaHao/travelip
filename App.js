@@ -31,10 +31,6 @@ function App() {
       <NavigationContainer>
         <Stack.Navigator>
           <Stack.Screen
-            name="KeyboardAvoidingView"
-            component={KeyboardAvoidingView}
-          />
-          <Stack.Screen
             name="Home"
             component={Home}
           />

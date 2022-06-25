@@ -4,6 +4,7 @@ import { StyleSheet,  View, Text, Dimensions, Animated, Callout, Image} from 're
 import { useSelector, useDispatch } from 'react-redux';
 import { getCities } from '../Redux/actions';
 import mapStyle from '../utils/MapStyle.json';
+import { setSelectedLog } from 'react-native/Libraries/LogBox/Data/LogBoxData';
 
 
 const { width, height } = Dimensions.get("window");
@@ -28,8 +29,9 @@ export default function Map_FindMountain() {
 
   useEffect(() => {
     MapAnimation.addListener(({ value }) => {
-      console.log("value", {value})
+      console.log('value',value);
       let index = Math.floor(value / CARD_WIDTH + 0.3); // animate 30% away from landing on the next item
+      console.log('city length',cities.length, index)
       if (index >= cities.length) {
         index = cities.length - 1;
       }
@@ -38,8 +40,6 @@ export default function Map_FindMountain() {
       }
 
       clearTimeout(regionTimeout);
-
-      console.log("animated", {index})
 
       const regionTimeout = setTimeout(() => {
         if( mapIndex !== index ) {
@@ -109,10 +109,12 @@ export default function Map_FindMountain() {
 
           const onMarkerPress = (mapEventData) => {
             const markerID = mapEventData._targetInst.return.key;
-            console.log({markerID})
+
+            console.log('markerID',markerID);
         
             let x = (markerID * CARD_WIDTH) + (markerID * 20); 
-            console.log({x})
+
+            console.log('x', x);
         
             _scrollView.current.scrollTo({x: x, y: 0, animated: true});
           }
