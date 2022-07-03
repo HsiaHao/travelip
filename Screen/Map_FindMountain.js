@@ -1,10 +1,12 @@
 // update date: 2022/6/25
-import React, { useEffect, useMemo, useState, Component } from 'react';
+import React, { useEffect, useState } from 'react';
 import MapView, {Marker, PROVIDER_GOOGLE} from 'react-native-maps';
 import Ionicons from 'react-native-vector-icons/Ionicons';
+import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import { 
   Animated,
   Dimensions,
+  FlatList,
   Image,
   Linking,
   StyleSheet,
@@ -28,6 +30,30 @@ export default function Map_FindMountain() {
   const { cities } = useSelector(state => state.userReducer);
   const dispatch = useDispatch();
 
+  // define state variable to store favorite items
+  const [favoriteList, setFavoriteList] = useState([]);
+
+  // function to add an item to favorite list
+  const onFavorite = mountain => {
+    setFavoriteList([...favoriteList, mountain]);
+  };
+
+  // function to remove an item from favorite list
+  const onRemoveFavorite = mountain => {
+    const filteredList = favoriteList.filter(
+      item => item.id !== mountain.id
+    );
+    setFavoriteList(filteredList);
+  };
+
+  // function to check if an item exists in the favorite list or not
+  const ifExists = mountain => {
+    if (favoriteList.filter(item => item.id === mountain.id).length > 0) {   
+      return true;
+    }
+    return false;
+  };
+
   useEffect(() => {
     dispatch(getCities());
   });
@@ -36,10 +62,11 @@ export default function Map_FindMountain() {
   let MapAnimation = new Animated.Value(0);
   const _map = React.useRef(null);
   const _scrollView = React.useRef(null);
+  
 
   useEffect(() => {
     MapAnimation.addListener(({ value }) => {
-      console.log("value", {value})
+      // console.log("value", {value})
       let index = Math.floor(value / CARD_WIDTH + 0.3);; // animate 30% away from landing on the next item
       if (index >= cities.length) {
         index = cities.length - 1;
@@ -185,9 +212,22 @@ export default function Map_FindMountain() {
               resizeMode="cover"
             />
             <View style={styles.textContent}>
+              
               <Text numberOfLines={1} style={styles.cardtitle}>{item.Mountain}</Text>
               <Text numberOfLines={1} style={styles.cardDescription}>{item.City}</Text>
+
+              <TouchableOpacity
+                  onPress={() => {
+                   ifExists(item)
+                   ? onRemoveFavorite(item)
+                   : onFavorite(item)
+                  }}
+                >
+              <Icon name={ifExists(item) ? "heart":"heart-outline"}  style={styles.heart} size={25}/>
+              </TouchableOpacity>
+              
               <View style={styles.button}>
+              
                 <TouchableOpacity
                   onPress={() => {
                     Linking.openURL(`https://www.google.com/maps/search/${item.lat},${item.lng}/`)
@@ -341,5 +381,9 @@ const styles = StyleSheet.create({
   textSign: {
     fontSize: 14,
     fontWeight: 'bold'
-}
+  },
+  heart: {
+    color:'#ffa07a',
+    
+  }
 });
